@@ -144,7 +144,7 @@ void saveTolocal(const vector<vector<int>>& mysudoku, const string& filename, in
     //ofstream file(filename);
     ofstream file(filename, ios::out | ios::app); //追加到文件末尾
     if (file.is_open()) {
-        file << "game" << index << endl;
+        file << index << endl;
         for (const auto& row : mysudoku) {
             for (int num : row) {
                 if (num == 0)
@@ -183,36 +183,24 @@ vector<vector<int>> readSudoku(ifstream& file) {
         printf("\n");
         sudoku.push_back(row);               
     }
-    file.close();
+    //file.close(); 不能在这里close，还没读完
     //printSudoku(sudoku);
     return sudoku;
 }
 //数独求解
-void solveSudoku(int count) {
-    if (count < 1 || count > 10000) {
-        printf("count error\n");
-        return;
-    }
-    string solution_file = "sudoku.txt";
-    string game_file = "game.txt";
-    while (count > 0) {
-        //读取game.txt中的数独
-        ifstream g_file(game_file);
-        // 求解
-        
-        //结果保存到sudoku.txt
-        //saveTolocal(res_sudoku, solution_file, index);
-        count--;
-    }
+void solveSudoku(vector<vector<int>>& mysudoku) {
+    printf("solve the sudoku game\n");
 }
-int main() {
-	//cout << "hello world!" << endl;
-    
+int main() {  
     //生成数独游戏
-    
+    printf("生成数独游戏:\n\n");
     string filename = "game.txt";
     int sudoku_index = 0;
-    int sudoku_number = 3;
+    int sudoku_number = 5;
+    if (sudoku_number < 1 || sudoku_number > 1000000) {
+        printf("sudoku_number set error\n");
+        return -1;
+    }
     while (sudoku_number > 0) {
         vector<vector<int>> su = genSudoku();
         setDifficulty(su, 0, 23, 53);
@@ -221,6 +209,26 @@ int main() {
         sudoku_index ++;
         sudoku_number --;
     }
+
     //求解数独
+    int solve_number = 5;
+    if (solve_number < 1 || solve_number > 10000) {
+        printf("solve_number set error\n");
+        return -1;
+    }
+    printf("\n求解数独游戏:\n\n");
+    ifstream inputFile("game.txt");
+    string game_index_line;
+    while (solve_number > 0) {
+        getline(inputFile, game_index_line);
+        int gameIndex = stoi(game_index_line);
+        printf("this is %d game\n", gameIndex);
+        vector<vector<int>> sudoku_todo = readSudoku(inputFile);
+        solveSudoku(sudoku_todo);
+        //printSudoku(sudoku_todo);
+        saveTolocal(sudoku_todo, "sudoku.txt", gameIndex);
+        solve_number--;
+    }
+    inputFile.close();
 	return 0;
 }
