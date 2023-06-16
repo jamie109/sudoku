@@ -98,7 +98,7 @@ void removeSudoku(vector<vector<int>>& mysudoku, int remove_num) {
         int remove_row = dist(gen);
         int remove_col = dist(gen);
         if (mysudoku[remove_row][remove_col] != 0) {
-            printf("remove [%d][%d] = %d\n", remove_row, remove_col, mysudoku[remove_row][remove_col]);
+            //printf("remove [%d][%d] = %d\n", remove_row, remove_col, mysudoku[remove_row][remove_col]);
             mysudoku[remove_row][remove_col] = 0;
             remove_num--;
         }
@@ -130,7 +130,7 @@ void setDifficulty(vector<vector<int>>& mysudoku, int D = -1, int min_blank = -1
             break;
         }
     }
-    if (min_blank > -1 && min_blank <= max_blank) {
+    if (min_blank >= 20 && min_blank <= max_blank && max_blank <= 55) {
         int remove_num = getNum(min_blank, max_blank);
         removeSudoku(mysudoku, remove_num);
     }
@@ -157,13 +157,40 @@ void saveTolocal(const vector<vector<int>>& mysudoku, const string& filename, in
         printf("sudoku has saved to local\n");
     }
 }
+
+//数独求解
+void solveSudoku(int count) {
+    if (count < 1 || count > 10000) {
+        printf("count error\n");
+        return;
+    }
+    string solution_file = "sudoku.txt";
+    string game_file = "game.txt";
+    while (count > 0) {
+        //读取game.txt中的数独
+        
+        // 求解
+        
+        //结果保存到sudoku.txt
+        //saveTolocal(res_sudoku, solution_file, index);
+        count--;
+    }
+}
 int main() {
 	//cout << "hello world!" << endl;
-    vector<vector<int>> su = genSudoku();
-    setDifficulty(su, 5, 14, 23);
-    printSudoku(su);
+    
+    
     string filename = "game.txt";
     int sudoku_index = 0;
-    saveTolocal(su, filename, sudoku_index);
+
+    int sudoku_number = 1;
+    while (sudoku_number > 0) {
+        vector<vector<int>> su = genSudoku();
+        setDifficulty(su, -1, 23, 53);
+        printSudoku(su);
+        saveTolocal(su, filename, sudoku_index);
+        sudoku_index ++;
+        sudoku_number --;
+    }
 	return 0;
 }
