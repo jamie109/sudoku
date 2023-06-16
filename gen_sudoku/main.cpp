@@ -12,7 +12,7 @@ enum SudokuDifficulty {
 
 // ¥Ú”°
 void printSudoku(const vector<vector<int>> &mysudoku) {
-    cout << "print sudoku\n";
+    cout << "---------------print sudoku------------------\n";
     for (int i = 0; i < SIZE; i++) {
         for (int j = 0; j < SIZE; j++) 
             cout << mysudoku[i][j] << " ";
@@ -31,5 +31,7 @@ vector<vector<int>> genSudoku() {
 
 int main() {
 	//cout << "hello world!" << endl;
+    vector<vector<int>> su = genSudoku();
+    printSudoku(su);
 	return 0;
 }
