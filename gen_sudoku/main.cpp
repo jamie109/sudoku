@@ -2,6 +2,7 @@
 #include <random>
 #include <vector>
 #include <algorithm>
+#include <fstream>
 
 using namespace std;
 
@@ -19,7 +20,6 @@ void printSudoku(const vector<vector<int>> &mysudoku) {
         cout <<"\n";
     }
 }
-
 // 数字是否可以放置在指定位置
 bool num_ok(vector<vector<int>>& mysudoku,int row, int col, int curnum) {
     bool isOK = true;
@@ -109,6 +109,7 @@ int getNum(int start_num, int end_num) {
     uniform_int_distribution<int> distribution(start_num, end_num);
     return distribution(gen);
 }
+// 设置难度、挖空数量
 void setDifficulty(vector<vector<int>>& mysudoku, int D = -1, int min_blank = -1, int max_blank = -1) {
     // enum { EASY, MEDIUM, HARD };
     printf("---------------set Difficulty----------------\n");
@@ -137,10 +138,32 @@ void setDifficulty(vector<vector<int>>& mysudoku, int D = -1, int min_blank = -1
         printf("error:please reset D or [min_blank, max_blank]\n");
     }
 }
+//生成数独到本地文件
+void saveTolocal(const vector<vector<int>>& mysudoku, const string& filename, int index) {
+    //ofstream file(filename);
+    ofstream file(filename, ios::out | ios::app); //追加到文件末尾
+    if (file.is_open()) {
+        file << "game" << index << endl;
+        for (const auto& row : mysudoku) {
+            for (int num : row) {
+                if (num == 0)
+                    file << "$ ";
+                else
+                    file << num << " "; 
+            }
+            file << endl; // 写入换行符
+        }
+        file.close();
+        printf("sudoku has saved to local\n");
+    }
+}
 int main() {
 	//cout << "hello world!" << endl;
     vector<vector<int>> su = genSudoku();
-    setDifficulty(su, 5, 14,23);
+    setDifficulty(su, 5, 14, 23);
     printSudoku(su);
+    string filename = "game.txt";
+    int sudoku_index = 0;
+    saveTolocal(su, filename, sudoku_index);
 	return 0;
 }
