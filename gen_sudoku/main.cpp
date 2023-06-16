@@ -254,25 +254,28 @@ int main(int argc, char* argv[]) {
         ("s,solve", "Solve sudoku game", cxxopts::value<std::string>()->implicit_value(""))
         ("n,generate", "Generate sudoku games", cxxopts::value<int>())
         ("m,difficulty", "Specify difficulty level for generated games", cxxopts::value<int>())
-        ("r,blanks", "Specify number of blanks for generated games", cxxopts::value<std::string>()->implicit_value(""))
+        ("r,blanks", "Specify number of blanks for generated games", cxxopts::value<std::string>())
         ("u", "Enable unique solution for generated games")
         ;
-   // options.parse_positional("count");
+    //options.parse_positional("count");
     try {
         //cout << "ok\n";
         auto result = options.parse(argc, argv);
+        // -c 
         if (result.count("count")){
             int count = result["count"].as<int>();
             //generateSudoku(count);
             printf("-c %d\n", count);
         }
+        // -s
         else if (result.count("solve"))
         {
-            string inputFile = result["solve"].as<std::string>();
+            string inputFile = result["solve"].as<string>();
             string outputFile = "sudoku.txt"; // 默认输出文件名
             //solveSudoku(inputFile, outputFile);
             printf("-s game.txt\n");
         }
+        // -n [-m/-r -u]
         else if (result.count("generate")) {
             int num = result["generate"].as<int>();
             printf("-n %d\n", num);
@@ -283,14 +286,15 @@ int main(int argc, char* argv[]) {
                 printf("-m %d\n", difficulty);
             }
             else if (result.count("blanks")) {
-                string blanksRange = result["blanks"].as<std::string>();
-                cout << blanksRange << endl;
-                size_t pos = blanksRange.find("~");
+                //cout << "in!\n";
+                string blanksRange = result["blanks"].as<string>();
+                //cout << blanksRange << endl;
+                size_t pos = blanksRange.find('~');
                 //cout << pos << " "<< string::npos<<endl;
                 if (pos != string::npos)
                 {
-                    int minBlanks = std::stoi(blanksRange.substr(0, pos));
-                    int maxBlanks = std::stoi(blanksRange.substr(pos + 1));
+                    int minBlanks = stoi(blanksRange.substr(0, pos));
+                    int maxBlanks = stoi(blanksRange.substr(pos + 1));
                     //generateSudokuGamesWithBlanks(count, minBlanks, maxBlanks);
                     printf("-r [%d, %d]\n", minBlanks, maxBlanks);
                 }
