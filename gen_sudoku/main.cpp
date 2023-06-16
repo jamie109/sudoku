@@ -188,15 +188,35 @@ vector<vector<int>> readSudoku(ifstream& file) {
     return sudoku;
 }
 //数独求解
-void solveSudoku(vector<vector<int>>& mysudoku) {
-    printf("solve the sudoku game\n");
+bool solveSudoku(vector<vector<int>>& mysudoku) {
+    //printf("solve the sudoku game\n");
+    for (int row = 0; row < SIZE; row++) {
+        for (int col = 0; col < SIZE; col++) {
+            if (mysudoku[row][col] == 0) {
+                for (int num = 1; num <= 9; num++) {
+                    if (num_ok(mysudoku, row, col, num)) {
+                        mysudoku[row][col] = num;  
+                        if (solveSudoku(mysudoku)) {
+                            //printf("SOLVED!!!\n");
+                            return true;  // Sudoku solved                  
+                        }
+                        mysudoku[row][col] = 0;  
+                    }
+                }
+                printf("No valid number can be placed at this cell\n");
+                return false; 
+            }
+        }
+    }
+    printf("SOLVED!!!\n");
+    return true;
 }
 int main() {  
     //生成数独游戏
     printf("生成数独游戏:\n\n");
     string filename = "game.txt";
     int sudoku_index = 0;
-    int sudoku_number = 5;
+    int sudoku_number = 1;
     if (sudoku_number < 1 || sudoku_number > 1000000) {
         printf("sudoku_number set error\n");
         return -1;
@@ -211,7 +231,7 @@ int main() {
     }
 
     //求解数独
-    int solve_number = 5;
+    int solve_number = 1;
     if (solve_number < 1 || solve_number > 10000) {
         printf("solve_number set error\n");
         return -1;
@@ -222,8 +242,9 @@ int main() {
     while (solve_number > 0) {
         getline(inputFile, game_index_line);
         int gameIndex = stoi(game_index_line);
-        printf("this is %d game\n", gameIndex);
+        printf("--------------this is %d game-------------------------\n", gameIndex);
         vector<vector<int>> sudoku_todo = readSudoku(inputFile);
+        printf("--------------solve the sudoku game--------------------\n");
         solveSudoku(sudoku_todo);
         //printSudoku(sudoku_todo);
         saveTolocal(sudoku_todo, "sudoku.txt", gameIndex);
