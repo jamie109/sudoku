@@ -5,10 +5,12 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include "cxxopts.hpp"
+
 using namespace std;
 
 const int SIZE = 9;//数独规格 9x9
-enum { EASY, MEDIUM, HARD };// 难度
+enum { EASY=1, MEDIUM, HARD };// 难度
 
 random_device rd;
 mt19937 gen(rd());
@@ -244,7 +246,80 @@ bool solveSudoku(vector<vector<int>>& mysudoku) {
     printf("SOLVED!!!\n");
     return true;
 }
-int main() {  
+
+int main(int argc, char* argv[]) {
+    cxxopts::Options options("sudoku.exe", "Sudoku Command Line Utility");
+    options.add_options()
+        ("c,count", "Generate sudoku solutions", cxxopts::value<int>())
+        ("s,solve", "Solve sudoku game", cxxopts::value<std::string>()->implicit_value(""))
+        ("n,generate", "Generate sudoku games", cxxopts::value<int>())
+        ("m,difficulty", "Specify difficulty level for generated games", cxxopts::value<int>())
+        ("r,blanks", "Specify number of blanks for generated games", cxxopts::value<std::string>()->implicit_value(""))
+        ("u", "Enable unique solution for generated games")
+        ;
+   // options.parse_positional("count");
+    try {
+        //cout << "ok\n";
+        auto result = options.parse(argc, argv);
+        if (result.count("count")){
+            int count = result["count"].as<int>();
+            //generateSudoku(count);
+            printf("-c %d\n", count);
+        }
+        else if (result.count("solve"))
+        {
+            string inputFile = result["solve"].as<std::string>();
+            string outputFile = "sudoku.txt"; // 默认输出文件名
+            //solveSudoku(inputFile, outputFile);
+            printf("-s game.txt\n");
+        }
+        else if (result.count("generate")) {
+            int num = result["generate"].as<int>();
+            printf("-n %d\n", num);
+            if (result.count("difficulty"))
+            {
+                int difficulty = result["difficulty"].as<int>();
+                //generateSudokuGamesWithDifficulty(count, difficulty);
+                printf("-m %d\n", difficulty);
+            }
+            else if (result.count("blanks")) {
+                string blanksRange = result["blanks"].as<std::string>();
+                cout << blanksRange << endl;
+                size_t pos = blanksRange.find("~");
+                //cout << pos << " "<< string::npos<<endl;
+                if (pos != string::npos)
+                {
+                    int minBlanks = std::stoi(blanksRange.substr(0, pos));
+                    int maxBlanks = std::stoi(blanksRange.substr(pos + 1));
+                    //generateSudokuGamesWithBlanks(count, minBlanks, maxBlanks);
+                    printf("-r [%d, %d]\n", minBlanks, maxBlanks);
+                }
+                else
+                {
+                    cout << "Invalid blanks range. Please provide a range in the format of min~max." << std::endl;
+                    return 1;
+                }
+            }
+            if (result.count("u"))
+            {
+                printf("-u\n");
+                // 在此处处理启用唯一解选项的逻辑
+            }
+
+        }
+    }
+    catch (const cxxopts::OptionException& e)
+    {
+        cout << "Error parsing command line options: " << e.what() << endl;
+        return 1;
+    }
+    //if (argc < 2){
+     //   printf("Invalid command. Please provide valid arguments.\n");
+      //  return 1;
+    //}
+   // string command = argv[1];//-c -s -n
+   // printf("%d", argc);
+    /*
     //生成数独游戏
     printf("生成数独游戏:\n\n");
     string filename = "game.txt";
@@ -259,7 +334,6 @@ int main() {
     //生成数独终盘
     //生成具有唯一解的数独
     //flag==0 唯一解
-    /*
     int k = 0;
     while (final_sudolu_num > 0) {
         vector<vector<int>> su = genSudoku(false);
@@ -269,7 +343,7 @@ int main() {
         final_sudolu_num--;
     }
     return 0;
-    */
+    
     //生成数独游戏
     while (sudoku_number > 0) { 
         vector<vector<int>> su = genSudoku(false);
@@ -301,5 +375,6 @@ int main() {
         solve_number--;
     }
     inputFile.close();
+    */
 	return 0;
 }
