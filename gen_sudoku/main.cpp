@@ -251,7 +251,7 @@ int main(int argc, char* argv[]) {
     cxxopts::Options options("sudoku.exe", "Sudoku Command Line Utility");
     options.add_options()
         ("c,count", "Generate sudoku solutions", cxxopts::value<int>())
-        ("s,solve", "Solve sudoku game", cxxopts::value<std::string>()->implicit_value(""))
+        ("s,solve", "Solve sudoku game", cxxopts::value<std::string>())
         ("n,generate", "Generate sudoku games", cxxopts::value<int>())
         ("m,difficulty", "Specify difficulty level for generated games", cxxopts::value<int>())
         ("r,blanks", "Specify number of blanks for generated games", cxxopts::value<std::string>())
@@ -261,19 +261,44 @@ int main(int argc, char* argv[]) {
     try {
         //cout << "ok\n";
         auto result = options.parse(argc, argv);
-        // -c 
+        // -c number number个数独终局到final_sudoku.txt
         if (result.count("count")){
-            int count = result["count"].as<int>();
+            int final_sudolu_num = result["count"].as<int>();
             //generateSudoku(count);
-            printf("-c %d\n", count);
+            printf("-c %d\n", final_sudolu_num);
+            int k = 0;
+            while (final_sudolu_num > 0) {
+                vector<vector<int>> su = genSudoku(false);
+                printSudoku(su);
+                saveTolocal(su, "final_sudoku.txt", k);
+                k++;
+                final_sudolu_num--;
+            }
         }
         // -s
         else if (result.count("solve"))
         {
-            string inputFile = result["solve"].as<string>();
+            string inputfile_name = result["solve"].as<string>();
+            cout << inputfile_name << endl;
             string outputFile = "sudoku.txt"; // 默认输出文件名
             //solveSudoku(inputFile, outputFile);
             printf("-s game.txt\n");
+            printf("求解数独游戏:\n\n");
+            ifstream inputFile(inputfile_name);
+            string game_index_line;
+            int solve_number = 3;//默认求解三个
+            while (solve_number > 0) {
+                getline(inputFile, game_index_line);
+                int gameIndex = stoi(game_index_line);
+                printf("--------------this is %d game-------------------------\n", gameIndex);
+                vector<vector<int>> sudoku_todo = readSudoku(inputFile);
+                printf("--------------solve the sudoku game--------------------\n");
+                solveSudoku(sudoku_todo);
+                //printSudoku(sudoku_todo);
+                saveTolocal(sudoku_todo, "sudoku.txt", gameIndex);
+                solve_number--;
+            }
+            inputFile.close();
         }
         // -n [-m/-r -u]
         else if (result.count("generate")) {
