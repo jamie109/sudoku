@@ -82,11 +82,44 @@ bool fillSudoku(vector<vector<int>>& mysudoku) {
     }
     return true;
 }
+//唯一解的数独
+bool fillSudoku2(vector<vector<int>>& board, int row, int col) {
+    if (col >= SIZE) {
+        col = 0;
+        row++;
+        if (row >= SIZE) 
+        return true;     
+    }
+    if (board[row][col] != 0) {
+        return fillSudoku2(board, row, col + 1);  
+    }
+    // 尝试填入数字
+    vector<int> nums{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    shuffle(nums.begin(), nums.end(), gen);//打乱顺序
+    for (int num = 0; num < SIZE; num++) {
+        int tmp = nums[num];
+        if (num_ok(board, row, col, tmp)) {
+            board[row][col] = tmp;
+            if (fillSudoku2(board, row, col + 1)) {
+                return true;  // 成功生成数独局
+            }
+        // 回溯
+            board[row][col] = 0;
+        }
+    }
+    return false;  
+}
+
 //生成数独（数独终盘）
-vector<vector<int>> genSudoku(){
+vector<vector<int>> genSudoku(bool flag = true) {//flag==0 唯一解
     vector<vector<int>> sudoku(SIZE, vector<int>(SIZE, 0));
     //填充
-    fillSudoku(sudoku);
+    if(flag)
+        fillSudoku(sudoku);
+    else {
+        srand(static_cast<unsigned int>(time(0)));
+        fillSudoku2(sudoku, 0, 0);
+    }
     //printSudoku(sudoku);
     return sudoku;
 }
@@ -217,32 +250,38 @@ int main() {
     string filename = "game.txt";
     int sudoku_index = 0;
     int sudoku_number = 5;//数独游戏数量
-    int final_sudolu_num = 12;//数独终盘数量
+    int final_sudolu_num = 2;//数独终盘数量
     if (sudoku_number < 1 || sudoku_number > 1000000) {
         printf("sudoku_number set error\n");
         return -1;
     }
+    
     //生成数独终盘
+    //生成具有唯一解的数独
+    //flag==0 唯一解
+    /*
     int k = 0;
     while (final_sudolu_num > 0) {
-        vector<vector<int>> su = genSudoku();
+        vector<vector<int>> su = genSudoku(false);
         printSudoku(su);
         saveTolocal(su, "final_sudoku.txt", k);
         k++;
         final_sudolu_num--;
     }
+    return 0;
+    */
     //生成数独游戏
     while (sudoku_number > 0) { 
-        vector<vector<int>> su = genSudoku();
-        setDifficulty(su, 0, 23, 53);
+        vector<vector<int>> su = genSudoku(false);
+        setDifficulty(su, 1, 23, 53);
         printSudoku(su);
         saveTolocal(su, filename, sudoku_index);
         sudoku_index ++;
         sudoku_number --;
     }
-    return 0;
+    //return 0;
     //求解数独
-    int solve_number = 1;
+    int solve_number = 5;
     if (solve_number < 1 || solve_number > 10000) {
         printf("solve_number set error\n");
         return -1;

@@ -130,6 +130,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="final_sudoku.txt" />
     <Text Include="game.txt" />
     <Text Include="sudoku.txt" />
   </ItemGroup>
