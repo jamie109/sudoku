@@ -177,7 +177,7 @@ void setDifficulty(vector<vector<int>>& mysudoku, int D = -1, int min_blank = -1
 //生成数独到本地文件
 void saveTolocal(const vector<vector<int>>& mysudoku, const string& filename, int index) {
     //ofstream file(filename);
-    ofstream file(filename, ios::out | ios::app); //追加到文件末尾
+    ofstream file(filename, /*ios::out | */ios::app); //追加到文件末尾
     if (file.is_open()) {
         file << index << endl;
         for (const auto& row : mysudoku) {
@@ -270,7 +270,7 @@ int main(int argc, char* argv[]) {
             int k = 0;
             while (final_sudolu_num > 0) {
                 vector<vector<int>> su = genSudoku(false);
-                printSudoku(su);
+                //printSudoku(su);
                 saveTolocal(su, "final_sudoku.txt", k);
                 k++;
                 final_sudolu_num--;
@@ -361,14 +361,14 @@ int main(int argc, char* argv[]) {
                 //flag默认true没有唯一解，如果 -u flag为 false调用fillSudoku2
                 vector<vector<int>> su = genSudoku(flag);
                 setDifficulty(su, difficulty, minBlanks, maxBlanks);
-                printSudoku(su);
+                //printSudoku(su);
                 saveTolocal(su, "game.txt", sudoku_index);
                 sudoku_index++;
                 sudoku_number--;
             }
         }
         else {
-        printf("ERROR: wrong command please retry\n");
+            printf("ERROR: wrong command please retry\n");
         }
     }
     catch (const cxxopts::OptionException& e)
