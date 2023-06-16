@@ -71,10 +71,9 @@ bool fillSudoku(vector<vector<int>>& mysudoku) {
                         if (fillSudoku(mysudoku)) //»ØËÝ
                             return true;
                         //»ØËÝÊ§°Ü
+                        //printf("»ØËÝÊ§°Ü\n");
                         mysudoku[row][col] = 0;
-                    }
-                    
-                    
+                    }                                        
                 }
                 return false;
             }
@@ -90,10 +89,47 @@ vector<vector<int>> genSudoku(){
     //printSudoku(sudoku);
     return sudoku;
 }
-
+//ÍÚ¿ÕÊý×Ö
+void removeSudoku(vector<vector<int>>& mysudoku, int remove_num) {
+    printf("remove %d from mysudoku\n", remove_num);
+}
+//Ëæ»úÊý
+int getNum(int start_num, int end_num) {
+    uniform_int_distribution<int> distribution(start_num, end_num);
+    return distribution(gen);
+}
+void setDifficulty(vector<vector<int>>& mysudoku, int D = -1, int min_blank = -1, int max_blank = -1) {
+    // enum { EASY, MEDIUM, HARD };
+    printf("---------------set Difficulty----------------\n");
+    if (D != -1) {
+        switch (D)
+        {
+        case EASY:
+            removeSudoku(mysudoku, 20);
+            break;
+        case MEDIUM:
+            removeSudoku(mysudoku, 30);
+            break;
+        case HARD:
+            removeSudoku(mysudoku, 40);
+            break;
+        default:
+            printf("error:wrong difficulty setting\n");
+            break;
+        }
+    }
+    else if (min_blank > -1 && min_blank <= max_blank) {
+        int remove_num = getNum(min_blank, max_blank);
+        removeSudoku(mysudoku, remove_num);
+    }
+    else {
+        printf("error:please reset D or [min_blank, max_blank]\n");
+    }
+}
 int main() {
 	//cout << "hello world!" << endl;
     vector<vector<int>> su = genSudoku();
+    setDifficulty(su, 5);
     printSudoku(su);
 	return 0;
 }
