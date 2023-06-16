@@ -302,11 +302,16 @@ int main(int argc, char* argv[]) {
         }
         // -n [-m/-r -u]
         else if (result.count("generate")) {
-            int num = result["generate"].as<int>();
-            printf("-n %d\n", num);
+            int sudoku_number = result["generate"].as<int>();
+            printf("-n %d\n", sudoku_number);
+            int difficulty = -1;
+            int minBlanks = -1;
+            int maxBlanks = -1;
+            bool flag = true;//默认没有唯一解
+            // -m /-r
             if (result.count("difficulty"))
             {
-                int difficulty = result["difficulty"].as<int>();
+                difficulty = result["difficulty"].as<int>();
                 //generateSudokuGamesWithDifficulty(count, difficulty);
                 printf("-m %d\n", difficulty);
             }
@@ -318,8 +323,8 @@ int main(int argc, char* argv[]) {
                 //cout << pos << " "<< string::npos<<endl;
                 if (pos != string::npos)
                 {
-                    int minBlanks = stoi(blanksRange.substr(0, pos));
-                    int maxBlanks = stoi(blanksRange.substr(pos + 1));
+                    minBlanks = stoi(blanksRange.substr(0, pos));
+                    maxBlanks = stoi(blanksRange.substr(pos + 1));
                     //generateSudokuGamesWithBlanks(count, minBlanks, maxBlanks);
                     printf("-r [%d, %d]\n", minBlanks, maxBlanks);
                 }
@@ -332,9 +337,18 @@ int main(int argc, char* argv[]) {
             if (result.count("u"))
             {
                 printf("-u\n");
-                // 在此处处理启用唯一解选项的逻辑
+                flag = false;
             }
-
+            int sudoku_index = 0;//初始数独索引为0
+            while (sudoku_number > 0) {
+                //flag默认true没有唯一解，如果 -u flag为 false调用fillSudoku2
+                vector<vector<int>> su = genSudoku(flag);
+                setDifficulty(su, difficulty, minBlanks, maxBlanks);
+                printSudoku(su);
+                saveTolocal(su, "game.txt", sudoku_index);
+                sudoku_index++;
+                sudoku_number--;
+            }
         }
     }
     catch (const cxxopts::OptionException& e)
