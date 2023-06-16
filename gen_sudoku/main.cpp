@@ -82,7 +82,7 @@ bool fillSudoku(vector<vector<int>>& mysudoku) {
     }
     return true;
 }
-//生成数独
+//生成数独（数独终盘）
 vector<vector<int>> genSudoku(){
     vector<vector<int>> sudoku(SIZE, vector<int>(SIZE, 0));
     //填充
@@ -90,11 +90,11 @@ vector<vector<int>> genSudoku(){
     //printSudoku(sudoku);
     return sudoku;
 }
-//挖空数字
+//挖空数字（最终需要求解的数独游戏）
 void removeSudoku(vector<vector<int>>& mysudoku, int remove_num) {
     printf("remove %d from mysudoku\n", remove_num);
     uniform_int_distribution<> dist(0, SIZE - 1);
-    int count = SIZE * SIZE - remove_num;
+    //int count = SIZE * SIZE - remove_num;
     while (remove_num > 0) {
         int remove_row = dist(gen);
         int remove_col = dist(gen);
@@ -216,12 +216,23 @@ int main() {
     printf("生成数独游戏:\n\n");
     string filename = "game.txt";
     int sudoku_index = 0;
-    int sudoku_number = 1;
+    int sudoku_number = 5;//数独游戏数量
+    int final_sudolu_num = 12;//数独终盘数量
     if (sudoku_number < 1 || sudoku_number > 1000000) {
         printf("sudoku_number set error\n");
         return -1;
     }
-    while (sudoku_number > 0) {
+    //生成数独终盘
+    int k = 0;
+    while (final_sudolu_num > 0) {
+        vector<vector<int>> su = genSudoku();
+        printSudoku(su);
+        saveTolocal(su, "final_sudoku.txt", k);
+        k++;
+        final_sudolu_num--;
+    }
+    //生成数独游戏
+    while (sudoku_number > 0) { 
         vector<vector<int>> su = genSudoku();
         setDifficulty(su, 0, 23, 53);
         printSudoku(su);
@@ -229,7 +240,7 @@ int main() {
         sudoku_index ++;
         sudoku_number --;
     }
-
+    return 0;
     //求解数独
     int solve_number = 1;
     if (solve_number < 1 || solve_number > 10000) {
