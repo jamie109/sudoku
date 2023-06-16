@@ -92,6 +92,17 @@ vector<vector<int>> genSudoku(){
 //ÍÚ¿ÕÊý×Ö
 void removeSudoku(vector<vector<int>>& mysudoku, int remove_num) {
     printf("remove %d from mysudoku\n", remove_num);
+    uniform_int_distribution<> dist(0, SIZE - 1);
+    int count = SIZE * SIZE - remove_num;
+    while (remove_num > 0) {
+        int remove_row = dist(gen);
+        int remove_col = dist(gen);
+        if (mysudoku[remove_row][remove_col] != 0) {
+            printf("remove [%d][%d] = %d\n", remove_row, remove_col, mysudoku[remove_row][remove_col]);
+            mysudoku[remove_row][remove_col] = 0;
+            remove_num--;
+        }
+    }
 }
 //Ëæ»úÊý
 int getNum(int start_num, int end_num) {
@@ -114,11 +125,11 @@ void setDifficulty(vector<vector<int>>& mysudoku, int D = -1, int min_blank = -1
             removeSudoku(mysudoku, 40);
             break;
         default:
-            printf("error:wrong difficulty setting\n");
+            printf("set D error or use [min_blank, max_blank]\n");
             break;
         }
     }
-    else if (min_blank > -1 && min_blank <= max_blank) {
+    if (min_blank > -1 && min_blank <= max_blank) {
         int remove_num = getNum(min_blank, max_blank);
         removeSudoku(mysudoku, remove_num);
     }
@@ -129,7 +140,7 @@ void setDifficulty(vector<vector<int>>& mysudoku, int D = -1, int min_blank = -1
 int main() {
 	//cout << "hello world!" << endl;
     vector<vector<int>> su = genSudoku();
-    setDifficulty(su, 5);
+    setDifficulty(su, 5, 14,23);
     printSudoku(su);
 	return 0;
 }
