@@ -162,7 +162,7 @@ void setDifficulty(vector<vector<int>>& mysudoku, int D = -1, int min_blank = -1
             removeSudoku(mysudoku, 40);
             break;
         default:
-            printf("set D error or use [min_blank, max_blank]\n");
+            printf("set D error or will use [min_blank, max_blank]\n");
             break;
         }
     }
@@ -195,7 +195,7 @@ void saveTolocal(const vector<vector<int>>& mysudoku, const string& filename, in
 }
 //从文件中读取数独
 vector<vector<int>> readSudoku(ifstream& file) {
-    printf("----------------------read Sudoku------------------\n");
+    printf("--read Sudoku\n");
     vector<std::vector<int>> sudoku;
     string line;
     for (int i = 0; i < SIZE; ++i) {
@@ -207,15 +207,15 @@ vector<vector<int>> readSudoku(ifstream& file) {
         while (iss >> numStr) {
             if (numStr == "$") {
                 row.push_back(0);
-                printf("0 ");
+                //printf("0 ");
             }
             else {
                 int cur_num = stoi(numStr);
                 row.push_back(cur_num);
-                printf("%d ", cur_num);
+                //printf("%d ", cur_num);
             }
         }
-        printf("\n");
+        //printf("\n");
         sudoku.push_back(row);               
     }
     //file.close(); 不能在这里close，还没读完
@@ -238,7 +238,7 @@ bool solveSudoku(vector<vector<int>>& mysudoku) {
                         mysudoku[row][col] = 0;  
                     }
                 }
-                printf("No valid number can be placed at this cell\n");
+                //printf("No valid number can be placed at this cell\n");
                 return false; 
             }
         }
@@ -251,10 +251,11 @@ int main(int argc, char* argv[]) {
     cxxopts::Options options("sudoku.exe", "Sudoku Command Line Utility");
     options.add_options()
         ("c,count", "Generate sudoku solutions", cxxopts::value<int>())
-        ("s,solve", "Solve sudoku game", cxxopts::value<std::string>())
+        ("s,solve", "Solve sudoku games from game.txt", cxxopts::value<string>())
+        ("g,games", "Number of sudoku games to solve", cxxopts::value<int>()->default_value("3"))//add
         ("n,generate", "Generate sudoku games", cxxopts::value<int>())
         ("m,difficulty", "Specify difficulty level for generated games", cxxopts::value<int>())
-        ("r,blanks", "Specify number of blanks for generated games", cxxopts::value<std::string>())
+        ("r,blanks", "Specify number of blanks for generated games", cxxopts::value<string>())
         ("u", "Enable unique solution for generated games")
         ;
     //options.parse_positional("count");
@@ -283,16 +284,18 @@ int main(int argc, char* argv[]) {
             string outputFile = "sudoku.txt"; // 默认输出文件名
             //solveSudoku(inputFile, outputFile);
             printf("-s game.txt\n");
-            printf("求解数独游戏:\n\n");
+            //printf("求解数独游戏:\n");
             ifstream inputFile(inputfile_name);
             string game_index_line;
-            int solve_number = 3;//默认求解三个
+            //int solve_number = 3;//默认求解三个
+            int solve_number = result["games"].as<int>();
+            printf("solve_number is %d\n", solve_number);
             while (solve_number > 0) {
                 getline(inputFile, game_index_line);
                 int gameIndex = stoi(game_index_line);
                 printf("--------------this is %d game-------------------------\n", gameIndex);
                 vector<vector<int>> sudoku_todo = readSudoku(inputFile);
-                printf("--------------solve the sudoku game--------------------\n");
+                printf("--solve the sudoku game\n");
                 solveSudoku(sudoku_todo);
                 //printSudoku(sudoku_todo);
                 saveTolocal(sudoku_todo, "sudoku.txt", gameIndex);
@@ -339,8 +342,22 @@ int main(int argc, char* argv[]) {
                 printf("-u\n");
                 flag = false;
             }
+            int stage = 0;
+            if (0 < difficulty && difficulty < 4 || 20 <= minBlanks && minBlanks <= maxBlanks && maxBlanks <= 55) {
+                printf("very good you set difficulty right!\n");
+                stage = 1;
+            }
+            else if (difficulty == -1 && minBlanks == -1 && maxBlanks == -1) {
+                printf("you did not set difficulty so set the EASY game for you\n");
+                difficulty = EASY;
+                stage = 1;
+            }
+            else {
+                printf("ERROR:wrong diffulty please reset\n");
+                stage = -1;
+            }
             int sudoku_index = 0;//初始数独索引为0
-            while (sudoku_number > 0) {
+            while (sudoku_number > 0 && stage == 1) {
                 //flag默认true没有唯一解，如果 -u flag为 false调用fillSudoku2
                 vector<vector<int>> su = genSudoku(flag);
                 setDifficulty(su, difficulty, minBlanks, maxBlanks);
@@ -349,6 +366,9 @@ int main(int argc, char* argv[]) {
                 sudoku_index++;
                 sudoku_number--;
             }
+        }
+        else {
+        printf("ERROR: wrong command please retry\n");
         }
     }
     catch (const cxxopts::OptionException& e)
