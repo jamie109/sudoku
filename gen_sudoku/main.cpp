@@ -3,7 +3,8 @@
 #include <vector>
 #include <algorithm>
 #include <fstream>
-
+#include <string>
+#include <sstream>
 using namespace std;
 
 const int SIZE = 9;//数独规格 9x9
@@ -130,7 +131,7 @@ void setDifficulty(vector<vector<int>>& mysudoku, int D = -1, int min_blank = -1
             break;
         }
     }
-    if (min_blank >= 20 && min_blank <= max_blank && max_blank <= 55) {
+    else if (min_blank >= 20 && min_blank <= max_blank && max_blank <= 55) {
         int remove_num = getNum(min_blank, max_blank);
         removeSudoku(mysudoku, remove_num);
     }
@@ -157,7 +158,35 @@ void saveTolocal(const vector<vector<int>>& mysudoku, const string& filename, in
         printf("sudoku has saved to local\n");
     }
 }
-
+//从文件中读取数独
+vector<vector<int>> readSudoku(ifstream& file) {
+    printf("----------------------read Sudoku------------------\n");
+    vector<std::vector<int>> sudoku;
+    string line;
+    for (int i = 0; i < SIZE; ++i) {
+        getline(file, line);
+        istringstream iss(line);
+        string numStr;
+        //每一行
+        vector<int> row;
+        while (iss >> numStr) {
+            if (numStr == "$") {
+                row.push_back(0);
+                printf("0 ");
+            }
+            else {
+                int cur_num = stoi(numStr);
+                row.push_back(cur_num);
+                printf("%d ", cur_num);
+            }
+        }
+        printf("\n");
+        sudoku.push_back(row);               
+    }
+    file.close();
+    //printSudoku(sudoku);
+    return sudoku;
+}
 //数独求解
 void solveSudoku(int count) {
     if (count < 1 || count > 10000) {
@@ -168,7 +197,7 @@ void solveSudoku(int count) {
     string game_file = "game.txt";
     while (count > 0) {
         //读取game.txt中的数独
-        
+        ifstream g_file(game_file);
         // 求解
         
         //结果保存到sudoku.txt
@@ -179,18 +208,19 @@ void solveSudoku(int count) {
 int main() {
 	//cout << "hello world!" << endl;
     
+    //生成数独游戏
     
     string filename = "game.txt";
     int sudoku_index = 0;
-
-    int sudoku_number = 1;
+    int sudoku_number = 3;
     while (sudoku_number > 0) {
         vector<vector<int>> su = genSudoku();
-        setDifficulty(su, -1, 23, 53);
+        setDifficulty(su, 0, 23, 53);
         printSudoku(su);
         saveTolocal(su, filename, sudoku_index);
         sudoku_index ++;
         sudoku_number --;
     }
+    //求解数独
 	return 0;
 }
