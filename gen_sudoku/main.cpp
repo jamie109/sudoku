@@ -264,6 +264,10 @@ int main(int argc, char* argv[]) {
         auto result = options.parse(argc, argv);
         // -c number number个数独终局到final_sudoku.txt
         if (result.count("count")){
+            if (result.count("difficulty") || result.count("blanks") || result.count("u")) {
+                printf("ERROR: wrong command please retry\n");
+                return 1;
+            }
             int final_sudolu_num = result["count"].as<int>();
             //generateSudoku(count);
             printf("-c %d\n", final_sudolu_num);
@@ -277,8 +281,11 @@ int main(int argc, char* argv[]) {
             }
         }
         // -s
-        else if (result.count("solve"))
-        {
+        else if (result.count("solve")){
+            if (result.count("difficulty") || result.count("blanks") || result.count("u")) {
+                printf("ERROR: wrong command please retry\n");
+                return 1;
+            }
             string inputfile_name = result["solve"].as<string>();
             cout << inputfile_name << endl;
             string outputFile = "sudoku.txt"; // 默认输出文件名
