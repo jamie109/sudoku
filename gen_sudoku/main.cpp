@@ -50,7 +50,7 @@ bool num_ok(vector<vector<int>>& mysudoku,int row, int col, int curnum) {
         if (isOK == false)
             break;
         for (int j = 0; j < 3; j++) {
-            if (mysudoku[start_row + i][strat_col + j] == curnum) {
+            if (mysudoku[static_cast<std::vector<std::vector<int, std::allocator<int>>, std::allocator<std::vector<int, std::allocator<int>>>>::size_type>(start_row) + i][static_cast<std::vector<int, std::allocator<int>>::size_type>(strat_col) + j] == curnum) {
                 //printf("9: no\n");
                 isOK = false;
                 //break;
@@ -257,11 +257,66 @@ int main(int argc, char* argv[]) {
         ("m,difficulty", "Specify difficulty level for generated games", cxxopts::value<int>())
         ("r,blanks", "Specify number of blanks for generated games", cxxopts::value<string>())
         ("u", "Enable unique solution for generated games")
+        ("t,test","for test")
         ;
     //options.parse_positional("count");
     try {
         //cout << "ok\n";
         auto result = options.parse(argc, argv);
+        if (result.count("test")) {
+            //生成数独终局
+            int final_sudolu_num = 2;
+            int k = 0;
+            while (final_sudolu_num > 0) {
+                vector<vector<int>> su = genSudoku(false);
+                saveTolocal(su, "final_sudoku.txt", k);
+                k++;
+                final_sudolu_num--;
+            }
+            //生成各种数独游戏
+            vector<vector<int>> su1 = genSudoku(true);
+            setDifficulty(su1, -1, -1, -1);
+            printSudoku(su1);
+            saveTolocal(su1, "game.txt", 0);
+            vector<vector<int>> su2 = genSudoku(false);
+            setDifficulty(su2, -1, -1, -1);
+            saveTolocal(su2, "game.txt", 1);
+
+            vector<vector<int>> su3 = genSudoku(true);
+            setDifficulty(su3, 1, -1, -1);
+            saveTolocal(su3, "game.txt", 2);
+
+            vector<vector<int>> su4 = genSudoku(false);
+            setDifficulty(su4, -1, 26, 31);
+            saveTolocal(su4, "game.txt", 3);
+
+            vector<vector<int>> su5 = genSudoku(true);
+            setDifficulty(su5, 2, -1, -1);
+            saveTolocal(su5, "game.txt", 4);
+            vector<vector<int>> su6 = genSudoku(true);
+            setDifficulty(su6, 3, -1, -1);
+            saveTolocal(su6, "game.txt", 5);
+            vector<vector<int>> su7 = genSudoku(true);
+            setDifficulty(su7, 4, -1, -1);
+            saveTolocal(su7, "game.txt", 6);
+
+            vector<vector<int>> su8 = genSudoku(true);
+            setDifficulty(su8, -1, 10, 13);
+            saveTolocal(su8, "game.txt", 7);
+
+            string outputFile = "sudoku.txt"; // 默认输出文件名
+            string inputfile_name = "game.txt";
+            ifstream inputFile(inputfile_name);
+            string game_index_line;
+            getline(inputFile, game_index_line);
+            int gameIndex = stoi(game_index_line);
+            printf("--------------this is %d game-------------------------\n", gameIndex);
+            vector<vector<int>> sudoku_todo = readSudoku(inputFile);
+            printf("--solve the sudoku game\n");
+            solveSudoku(sudoku_todo);
+            //printSudoku(sudoku_todo);
+            saveTolocal(sudoku_todo, "sudoku.txt", gameIndex);
+        }
         // -c number number个数独终局到final_sudoku.txt
         if (result.count("count")){
             if (result.count("difficulty") || result.count("blanks") || result.count("u")) {
