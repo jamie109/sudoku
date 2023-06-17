@@ -401,7 +401,7 @@ int main(int argc, char* argv[]) {
             }
             if (result.count("u"))
             {
-                printf("-u\n");
+                printf("-u\n GIVE you SUDOKU with a unique solution\n");
                 flag = false;
             }
             int stage = 0;
