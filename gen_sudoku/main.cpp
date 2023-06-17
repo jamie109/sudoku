@@ -50,7 +50,7 @@ bool num_ok(vector<vector<int>>& mysudoku,int row, int col, int curnum) {
         if (isOK == false)
             break;
         for (int j = 0; j < 3; j++) {
-            if (mysudoku[start_row + i][strat_col + j] == curnum) {
+            if (mysudoku[static_cast<std::vector<std::vector<int, std::allocator<int>>, std::allocator<std::vector<int, std::allocator<int>>>>::size_type>(start_row) + i][static_cast<std::vector<int, std::allocator<int>>::size_type>(strat_col) + j] == curnum) {
                 //printf("9: no\n");
                 isOK = false;
                 //break;
